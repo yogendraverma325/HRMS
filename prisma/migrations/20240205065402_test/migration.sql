@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Role` ADD COLUMN `email` VARCHAR(255) NULL;

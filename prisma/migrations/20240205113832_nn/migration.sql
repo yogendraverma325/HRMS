@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Key` ADD COLUMN `permissions` VARCHAR(255) NOT NULL DEFAULT '';

@@ -4,7 +4,7 @@ import { tokenInfo } from '../config.js';
 import { AuthFailureError, InternalError } from '../core/ApiError.js';
 import JWT, { JwtPayload } from '../core/JWT.js';
 import User from '../database/model/User.js';
-
+import UserInterface from "../interfaces/User.js";
 export const getAccessToken = (authorization?: string) => {
   if (!authorization) throw new AuthFailureError('Invalid Authorization');
   if (!authorization.startsWith('Bearer '))
@@ -28,7 +28,7 @@ export const validateTokenData = (payload: JwtPayload): boolean => {
 };
 
 export const createTokens = async (
-  user: User,
+  user: UserInterface,
   accessTokenKey: string,
   refreshTokenKey: string,
 ): Promise<Tokens> => {
@@ -36,7 +36,7 @@ export const createTokens = async (
     new JwtPayload(
       tokenInfo.issuer,
       tokenInfo.audience,
-      user._id.toString(),
+      user.id.toString(),
       accessTokenKey,
       tokenInfo.accessTokenValidity,
     ),
@@ -48,7 +48,7 @@ export const createTokens = async (
     new JwtPayload(
       tokenInfo.issuer,
       tokenInfo.audience,
-      user._id.toString(),
+      user.id.toString(),
       refreshTokenKey,
       tokenInfo.refreshTokenValidity,
     ),

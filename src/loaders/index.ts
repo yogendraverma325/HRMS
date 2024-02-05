@@ -3,8 +3,13 @@ import expressLoader from './express.js';
 import mongooseLoader from './mongoose.js';
 
 const loader = (app: Application) => {
-  mongooseLoader();
-  expressLoader(app);
+  // mongooseLoader();
+  try {
+    expressLoader(app);
+  } catch (error) {
+    console.log("err",error)
+  }
+ 
 };
 
 export default loader;

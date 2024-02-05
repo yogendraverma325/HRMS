@@ -1,7 +1,9 @@
 import { Types } from 'mongoose';
 import Keystore, { KeystoreModel } from '../model/KeyStore.js';
 import User from '../model/User.js';
-
+import UserInterface from "../../interfaces/User.js";
+import KeystoreInterface from "../../interfaces/Keystore.js";
+import { db } from '../../loaders/prisma.js';
 async function findforKey(client: User, key: string): Promise<Keystore | null> {
   return KeystoreModel.findOne({
     client: client,
@@ -35,19 +37,20 @@ async function find(
 }
 
 async function create(
-  client: User,
+  client: UserInterface,
   primaryKey: string,
   secondaryKey: string,
-): Promise<Keystore> {
+): Promise<KeystoreInterface | null> {
   const now = new Date();
-  const keystore = await KeystoreModel.create({
-    client: client,
-    primaryKey: primaryKey,
-    secondaryKey: secondaryKey,
-    createdAt: now,
-    updatedAt: now,
+
+  const keystore = await db.keyStore.create({
+    data: {
+      client: client.id,
+      primaryKey: primaryKey,
+      secondaryKey: secondaryKey,
+    },
   });
-  return keystore.toObject();
+  return keystore;
 }
 
 export default {

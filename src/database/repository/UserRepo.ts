@@ -3,8 +3,11 @@ import { InternalError } from '../../core/ApiError.js';
 import Keystore from '../model/KeyStore.js';
 import { RoleModel } from '../model/Role.js';
 import User, { UserModel } from '../model/User.js';
+import UserInterface from "../../interfaces/User.js";
 import KeyStoreRepo from './KeyStoreRepo.js';
-
+import { db } from '../../loaders/prisma.js';
+// const { PrismaClient } = require('@prisma/client');
+// const prisma = new PrismaClient();
 interface UserQuery {
   _id?: { $in: string[] };
   status: boolean;
@@ -41,16 +44,13 @@ async function findById(id: Types.ObjectId): Promise<User | null> {
     .exec();
 }
 
-async function findByEmail(email: string): Promise<User | null> {
-  return UserModel.findOne({ email: email })
-    .select('+email +password +roles')
-    .populate({
-      path: 'roles',
-      match: { status: true },
-      select: { code: 1 },
-    })
-    .lean()
-    .exec();
+async function findByEmail(email: string): Promise<UserInterface | null> {
+  const allUsers = await db.user.findFirst({
+    where:{
+      email: email 
+    }
+  });
+  return allUsers;
 }
 
 async function findFieldsById(

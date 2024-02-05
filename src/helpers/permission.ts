@@ -9,9 +9,7 @@ export default (permission: string) =>
       if (!req.apiKey?.permissions)
         return next(new ForbiddenError('Permission Denied'));
 
-      const exists = req.apiKey.permissions.find(
-        (entry: any) => entry === permission,
-      );
+      const exists = req.apiKey.permissions==permission;
       if (!exists) return next(new ForbiddenError('Permission Denied'));
 
       next();

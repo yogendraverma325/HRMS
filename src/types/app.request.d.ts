@@ -1,11 +1,11 @@
 import { Request } from 'express';
 import ApiKey from '../database/model/ApiKey.js';
-
+import ApiKeyInterface from '~/interfaces/Key.js';
 import Keystore from '../database/model/KeyStore.js';
 import User from '../database/model/User.js';
 
 declare interface PublicRequest extends Request {
-  apiKey: ApiKey;
+  apiKey: ApiKeyInterface;
 }
 
 declare interface RoleRequest extends PublicRequest {

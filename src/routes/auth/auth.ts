@@ -23,7 +23,7 @@ const router = express.Router();
 
 router.post(
   '/login',
-  validator(schema.credential),
+  validator(schema.credential, ValidationSource.BODY),
   asyncHandler(async (req: PublicRequest, res) => {
     const user = await UserRepo.findByEmail(req.body.email);
 
@@ -39,7 +39,6 @@ router.post(
     await KeyStoreRepo.create(user, accessTokenKey, refreshTokenKey);
     const tokens = await createTokens(user, accessTokenKey, refreshTokenKey);
     const userData = await getUserData(user);
-
     new SuccessResponse('Login Success', {
       user: userData,
       tokens: tokens,
