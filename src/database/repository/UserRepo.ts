@@ -45,9 +45,25 @@ async function findById(id: Types.ObjectId): Promise<User | null> {
 }
 
 async function findByEmail(email: string): Promise<UserInterface | null> {
+
+  
   const allUsers = await db.user.findFirst({
     where:{
       email: email 
+    },
+    include: {
+      user_role_master: {
+        select: {
+          role: {
+            select: {
+              id: true,
+              name: true,
+              // Include other desired role fields
+            }
+          }
+        }
+      }
+      
     }
   });
   return allUsers;

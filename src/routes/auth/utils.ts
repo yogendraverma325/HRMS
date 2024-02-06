@@ -7,6 +7,6 @@ export const enum AccessMode {
 }
 
 export async function getUserData(user: UserInterface) {
-  const data = _.pick(user, ['id', 'name','email','firstName','lastName']);
+  const data = _.pick(user, ['id', 'name','email','firstName','lastName','user_role_master.role.id','user_role_master.role.name']);
   return data;
 }

@@ -13,13 +13,20 @@ model User {
   firstName   String   @db.VarChar(255)
   lastName   String    @db.VarChar(255)
   password   String    @db.VarChar(255)
+  user_role_master  User_Role_Master ?
 }
 model Role {
   id      Int      @id @default(autoincrement())
   name    String?  @db.VarChar(255)
-  email    String?  @db.VarChar(255)
+  user_role_master  User_Role_Master ?
 }
-
+model User_Role_Master {
+  id       Int  @id @default(autoincrement())
+  user  User  ? @relation(fields: [userId], references: [id]) //
+  role  Role  ? @relation(fields: [roleId], references: [id]) //
+  userId Int  @unique
+  roleId Int  @unique
+}
 
 model KeyStore {
   id           Int      @id @default(autoincrement())

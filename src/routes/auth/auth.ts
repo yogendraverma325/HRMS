@@ -25,10 +25,14 @@ router.post(
   '/login',
   validator(schema.credential, ValidationSource.BODY),
   asyncHandler(async (req: PublicRequest, res) => {
+    const passwordHash = await bcrypt.hash("test1234", 10);
+    //console.log(passwordHash)
     const user = await UserRepo.findByEmail(req.body.email);
 
     if (!user) throw new BadRequestError('User not registered');
     if (!user.password) throw new BadRequestError('Credential not set');
+
+    
 
     const match = await bcrypt.compare(req.body.password, user.password);
     if (!match) throw new AuthFailureError('Authentication failure');
