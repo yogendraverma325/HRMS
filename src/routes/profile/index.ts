@@ -28,19 +28,13 @@ router.get(
 );
 
 router.put(
-  '/',
+  '/familyDetails',
   validator(schema.profile),
   asyncHandler(async (req: ProtectedRequest, res) => {
     const user = await UserRepo.findPrivateProfileById(req.user.id);
     if (!user) throw new BadRequestError('User not registered');
-
-    if (req.body.name) user.name = req.body.name;
-
-    await UserRepo.updateInfo(user);
-
-    const data = _.pick(user, ['name', 'profilePicUrl']);
-
-    return new SuccessResponse('Profile updated', data).send(res);
+    await UserRepo.updatefamilyDetails(user,req.body);
+    return new SuccessResponse('Profile updated', req.body).send(res);
   }),
 );
 

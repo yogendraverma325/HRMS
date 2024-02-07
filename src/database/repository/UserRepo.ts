@@ -1,15 +1,16 @@
 
+import EmployeeFamilyDetailsInterface from '~/interfaces/FamilyDetails.js';
 import { InternalError } from '../../core/ApiError.js';
 import UserInterface from "../../interfaces/User.js";
 import { db } from '../../loaders/prisma.js';
 // contains critical information of the user
 async function findById(id:number): Promise<UserInterface | null> {
-  const User = await db.user.findFirst({
+  const User = await db. employee.findFirst({
     where:{
       id: id 
     },
     include: {
-      user_role_details: {
+      Employee_role_details: {
         select: {
           role: {
             select: {
@@ -26,12 +27,12 @@ async function findById(id:number): Promise<UserInterface | null> {
 }
 
 async function findByEmail(email: string): Promise<UserInterface | null> {
-  const User = await db.user.findFirst({
+  const User = await db. employee.findFirst({
     where:{
       email: email 
     },
     include: {
-      user_role_details: {
+      Employee_role_details: {
         select: {
           role: {
             select: {
@@ -48,12 +49,12 @@ async function findByEmail(email: string): Promise<UserInterface | null> {
 }
 
 async function findPrivateProfileById(id: number): Promise<UserInterface | null> {
-  const User = await db.user.findFirst({
+  const User = await db. employee.findFirst({
     where:{
       id: id 
     },
     include: {
-      user_role_details: {
+      Employee_role_details: {
         select: {
           role: {
             select: {
@@ -69,30 +70,31 @@ async function findPrivateProfileById(id: number): Promise<UserInterface | null>
   
   return User;
 }
-async function updateInfo(input: UserInterface): Promise<UserInterface | null> {
-  const User = await db.user.findFirst({
+async function updatefamilyDetails(user: UserInterface,inputFamilyDetails:EmployeeFamilyDetailsInterface): Promise<EmployeeFamilyDetailsInterface | null> {
+  
+  const FamilyDetails = await db.employeeFamilyDetails.findFirst({
     where:{
-      id: input.id
-    },
-    include: {
-      user_role_details: {
-        select: {
-          role: {
-            select: {
-              id: true,
-              name: true,
-            }
-          }
-        }
-      }
-      
+      EmployeeId:user.id
     }
   });
-  return User;
+  if(FamilyDetails){
+       await db.employeeFamilyDetails.update({
+      where: {
+        empFamilyDetailsId:FamilyDetails.empFamilyDetailsId,
+        EmployeeId:FamilyDetails.EmployeeId
+      },
+      data: inputFamilyDetails
+    })
+  }else{
+    await db.employeeFamilyDetails.create({
+      data: {...inputFamilyDetails,...{EmployeeId:user.id},...{createdBy:user.id},...{updatedBy:user.id}},
+    });
+  }
+  return inputFamilyDetails;
 }
 export default {
   findById,
   findByEmail,
   findPrivateProfileById,
-  updateInfo
+  updatefamilyDetails
 };

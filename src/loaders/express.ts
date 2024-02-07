@@ -4,7 +4,7 @@ import mongoSanitize from 'express-mongo-sanitize';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import hpp from 'hpp';
-
+import moment from 'moment-timezone';
 import morgan from 'morgan';
 import passport from 'passport';
 
@@ -46,6 +46,18 @@ interface CustomRequest extends Request {
   requestTime?: string;
 }
 
+export const setTimezone = (req: Request, res: Response, next: NextFunction) => {
+  // Set the default timezone for the server (change 'Asia/Kolkata' to your desired timezone)
+  const defaultTimezone = 'Asia/Kolkata';
+  moment.tz.setDefault(defaultTimezone);
+  
+  // Alternatively, you can set the timezone based on the user's preference (if available)
+  // For example, if the client sends the timezone in a header named 'timezone'
+  // const clientTimezone = req.header('timezone');
+  // moment.tz.setDefault(clientTimezone || defaultTimezone);
+
+  next();
+};
 const expressLoader = (app: Application): void => {
   try {
     app.use('/api', limiter);
@@ -55,6 +67,7 @@ const expressLoader = (app: Application): void => {
       app.use(morgan('dev'));
     }
     app.use(express.json({ limit: '10mb' }));
+    
     app.use(
       express.urlencoded({
         limit: '10mb',
@@ -66,7 +79,7 @@ const expressLoader = (app: Application): void => {
     // Swagger setup
     app.use('/api-docs', swaggerUi.serve);
     app.get('/api-docs', swaggerUi.setup(swaggerDocument));
-
+    app.use(setTimezone);
     app.use('/api', routes);
     // catch 404 and forward to error handler
     app.use((req, res, next) => next(new NotFoundError()));

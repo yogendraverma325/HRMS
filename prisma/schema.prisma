@@ -6,25 +6,25 @@ datasource db {
   provider = "mysql"
   url      = env("LOCAL_DB_URI")
 }
-model User {
+model Employee {
   id      Int      @id @default(autoincrement())
   name    String?  @db.VarChar(255)
   email   String   @unique(map: "email") @db.VarChar(255)
   firstName   String   @db.VarChar(255)
   lastName   String    @db.VarChar(255)
   password   String    @db.VarChar(255)
-  user_role_details  User_Role_Master ?
+  Employee_role_details  Employee_Role_Master ?
 }
 model Role {
   id      Int      @id @default(autoincrement())
   name    String?  @db.VarChar(255)
-  user_role_master  User_Role_Master ?
+  Employee_role_master  Employee_Role_Master ?
 }
-model User_Role_Master {
+model Employee_Role_Master {
   id       Int  @id @default(autoincrement())
-  user  User  ? @relation(fields: [userId], references: [id]) //
+  Employee  Employee  ? @relation(fields: [EmployeeId], references: [id]) //
   role  Role  ? @relation(fields: [roleId], references: [id]) //
-  userId Int  @unique
+  EmployeeId Int  @unique
   roleId Int  @unique
 }
 
@@ -42,4 +42,21 @@ model Key {
   version    String  @db.VarChar(255)
   status    Boolean 
   permissions    String   @db.VarChar(255) @default("")
+}
+
+// schema.prisma
+
+model EmployeeFamilyDetails {
+  empFamilyDetailsId  Int       @id @default(autoincrement())
+  EmployeeId               Int
+  name                String
+  dob                 String    // Assuming date of birth is stored as a string
+  gender              String
+  emergencyContactPerson Boolean
+  mobileNo            String
+  relationWithEmp     String
+  createdBy           Int
+  createdAt           DateTime @default(now())
+  updatedBy           Int
+  updatedAt           DateTime @default(now()) @updatedAt
 }

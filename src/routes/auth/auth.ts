@@ -44,7 +44,7 @@ router.post(
     const tokens = await createTokens(user, accessTokenKey, refreshTokenKey);
     const userData = await getUserData(user);
     new SuccessResponse('Login Success', {
-      user: userData,
+      emp: userData,
       tokens: tokens,
     }).send(res);
   }),
@@ -59,8 +59,7 @@ router.use(authentication);
 router.delete(
   '/logout',
   asyncHandler(async (req: ProtectedRequest, res) => {
-    // console.log("req logout" ,req);
-    //await KeyStoreRepo.remove(req.keystore);
+    await KeyStoreRepo.remove(req.keystore);
     new SuccessMsgResponse('Logout success').send(res);
   }),
 );
