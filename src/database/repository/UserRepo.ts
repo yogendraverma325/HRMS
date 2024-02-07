@@ -26,8 +26,6 @@ async function findById(id:number): Promise<UserInterface | null> {
 }
 
 async function findByEmail(email: string): Promise<UserInterface | null> {
-
-  
   const User = await db.user.findFirst({
     where:{
       email: email 
@@ -49,7 +47,52 @@ async function findByEmail(email: string): Promise<UserInterface | null> {
   return User;
 }
 
+async function findPrivateProfileById(id: number): Promise<UserInterface | null> {
+  const User = await db.user.findFirst({
+    where:{
+      id: id 
+    },
+    include: {
+      user_role_details: {
+        select: {
+          role: {
+            select: {
+              id: true,
+              name: true,
+            }
+          }
+        }
+      }
+      
+    }
+  });
+  
+  return User;
+}
+async function updateInfo(input: UserInterface): Promise<UserInterface | null> {
+  const User = await db.user.findFirst({
+    where:{
+      id: input.id
+    },
+    include: {
+      user_role_details: {
+        select: {
+          role: {
+            select: {
+              id: true,
+              name: true,
+            }
+          }
+        }
+      }
+      
+    }
+  });
+  return User;
+}
 export default {
   findById,
-  findByEmail
+  findByEmail,
+  findPrivateProfileById,
+  updateInfo
 };

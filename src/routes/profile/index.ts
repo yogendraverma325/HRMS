@@ -11,20 +11,18 @@ import validator from '../../helpers/validator.js';
 import schema from './schema.js';
 
 const router = express.Router();
-
 /*-------------------------------------------------------------------------*/
-router.use(authentication);
+ router.use(authentication);
 /*-------------------------------------------------------------------------*/
 
 router.get(
   '/my',
   asyncHandler(async (req: ProtectedRequest, res) => {
-    const user = await UserRepo.findPrivateProfileById(req.user._id);
+    const user = await UserRepo.findPrivateProfileById((req.user.id));
     if (!user) throw new BadRequestError('User not registered');
-
     return new SuccessResponse(
       'success',
-      _.pick(user, ['name', 'email', 'profilePicUrl', 'roles']),
+      _.pick(user, ['name', 'email','firstName','lastName']),
     ).send(res);
   }),
 );
@@ -33,11 +31,10 @@ router.put(
   '/',
   validator(schema.profile),
   asyncHandler(async (req: ProtectedRequest, res) => {
-    const user = await UserRepo.findPrivateProfileById(req.user._id);
+    const user = await UserRepo.findPrivateProfileById(req.user.id);
     if (!user) throw new BadRequestError('User not registered');
 
     if (req.body.name) user.name = req.body.name;
-    if (req.body.profilePicUrl) user.profilePicUrl = req.body.profilePicUrl;
 
     await UserRepo.updateInfo(user);
 

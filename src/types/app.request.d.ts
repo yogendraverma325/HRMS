@@ -3,6 +3,7 @@ import ApiKey from '../database/model/ApiKey.js';
 import ApiKeyInterface from '~/interfaces/Key.js';
 import User from '../database/model/User.js';
 import KeystoreInterface from '~/interfaces/Keystore.ts';
+import UserInterface from '~/interfaces/User.ts';
 
 declare interface PublicRequest extends Request {
   apiKey: ApiKeyInterface;

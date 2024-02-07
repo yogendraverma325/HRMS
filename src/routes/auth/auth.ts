@@ -59,7 +59,8 @@ router.use(authentication);
 router.delete(
   '/logout',
   asyncHandler(async (req: ProtectedRequest, res) => {
-     await KeyStoreRepo.remove(req.keystore);
+    // console.log("req logout" ,req);
+    //await KeyStoreRepo.remove(req.keystore);
     new SuccessMsgResponse('Logout success').send(res);
   }),
 );
