@@ -58,7 +58,6 @@ async function findByEmail(email: string): Promise<UserInterface | null> {
             select: {
               id: true,
               name: true,
-              // Include other desired role fields
             }
           }
         }
