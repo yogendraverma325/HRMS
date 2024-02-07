@@ -1,8 +1,8 @@
 import { Request } from 'express';
 import ApiKey from '../database/model/ApiKey.js';
 import ApiKeyInterface from '~/interfaces/Key.js';
-import Keystore from '../database/model/KeyStore.js';
 import User from '../database/model/User.js';
+import KeystoreInterface from '~/interfaces/Keystore.ts';
 
 declare interface PublicRequest extends Request {
   apiKey: ApiKeyInterface;
@@ -13,9 +13,9 @@ declare interface RoleRequest extends PublicRequest {
 }
 
 declare interface ProtectedRequest extends RoleRequest {
-  user: User;
+  user: UserInterface;
   accessToken: string;
-  keystore: Keystore;
+  keystore: KeystoreInterface;
 }
 
 declare interface Tokens {

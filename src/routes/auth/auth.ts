@@ -50,78 +50,7 @@ router.post(
   }),
 );
 
-router.post(
-  '/signup',
-  validator(schema.signup),
-  asyncHandler(async (req: PublicRequest, res) => {
-    const user = await UserRepo.findByEmail(req.body.email);
 
-    if (user) throw new BadRequestError('User already registered');
-
-    const accessTokenKey = crypto.randomBytes(64).toString('hex');
-    const refreshTokenKey = crypto.randomBytes(64).toString('hex');
-
-    const passwordHash = await bcrypt.hash(req.body.password, 10);
-
-    const { user: createdUser, keystore } = await UserRepo.create(
-      {
-        name: req.body.name,
-        email: req.body.email,
-        profilePicUrl: req.body.profilePicUrl,
-        password: passwordHash,
-      } as User,
-      accessTokenKey,
-      refreshTokenKey,
-      RoleCode.LEARNER,
-    );
-
-    const tokens = await createTokens(
-      createdUser,
-      keystore.primaryKey,
-      keystore.secondaryKey,
-    );
-    const userData = await getUserData(createdUser);
-
-    new SuccessResponse('Signup Successful', {
-      user: userData,
-      tokens: tokens,
-    }).send(res);
-  }),
-);
-
-router.post(
-  '/reset',
-  validator(schema.resetPassword, ValidationSource.BODY),
-  asyncHandler(async (req: PublicRequest, res: Response) => {
-    const email = req.body.email;
-    const user = await UserRepo.findByEmail(req.body.email);
-    if (!user) throw new AuthFailureError('User not registered');
-
-    const token = uuidv4();
-    /**
-     * The token will expires in 1 hour
-     */
-    const expires = new Date(new Date().getTime() + 3600 * 1000);
-
-    const existingToken = await VerificationTokenRepo.findByEmail(email);
-
-    if (existingToken) {
-      await VerificationTokenModel.findByIdAndDelete(existingToken._id);
-    }
-
-    const twoFactorToken = await VerificationTokenRepo.create(
-      user,
-      email,
-      token,
-      expires,
-    );
-
-    await sendPasswordResetEmail(email, twoFactorToken.token);
-    new SuccessResponse('Verification token sent successfully!', {
-      token: twoFactorToken,
-    }).send(res);
-  }),
-);
 
 /*-------------------------------------------------------------------------*/
 router.use(authentication);
@@ -130,7 +59,7 @@ router.use(authentication);
 router.delete(
   '/logout',
   asyncHandler(async (req: ProtectedRequest, res) => {
-    await KeyStoreRepo.remove(req.keystore._id);
+     await KeyStoreRepo.remove(req.keystore);
     new SuccessMsgResponse('Logout success').send(res);
   }),
 );

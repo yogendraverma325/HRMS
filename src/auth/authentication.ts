@@ -20,13 +20,10 @@ export default router.use(
   validator(schema.auth, ValidationSource.HEADER),
   asyncHandler(async (req: ProtectedRequest, res, next) => {
     req.accessToken = getAccessToken(req.headers.authorization); // Express headers are auto converted to lowercase
-
     try {
       const payload = await JWT.validate(req.accessToken);
-
       validateTokenData(payload);
-
-      const user = await UserRepo.findById(new Types.ObjectId(payload.sub));
+      const user = await UserRepo.findById(parseInt(payload.sub));
       if (!user) throw new AuthFailureError('User not registered');
       req.user = user;
 

@@ -1,39 +1,21 @@
-import { Types } from 'mongoose';
-import Keystore, { KeystoreModel } from '../model/KeyStore.js';
-import User from '../model/User.js';
 import UserInterface from "../../interfaces/User.js";
 import KeystoreInterface from "../../interfaces/Keystore.js";
 import { db } from '../../loaders/prisma.js';
-async function findforKey(client: User, key: string): Promise<Keystore | null> {
-  return KeystoreModel.findOne({
-    client: client,
-    primaryKey: key,
-    status: true,
-  })
-    .lean()
-    .exec();
+async function findforKey(client: UserInterface, key: string): Promise<KeystoreInterface | null> {
+  return db.keyStore.findFirst({
+    where:{
+      client: client.id,
+      primaryKey: key
+    }
+   
+  });
 }
-
-async function remove(id: Types.ObjectId): Promise<Keystore | null> {
-  return KeystoreModel.findByIdAndRemove(id).lean().exec();
-}
-
-async function removeAllForClient(client: User) {
-  return KeystoreModel.deleteMany({ client: client }).exec();
-}
-
-async function find(
-  client: User,
-  primaryKey: string,
-  secondaryKey: string,
-): Promise<Keystore | null> {
-  return KeystoreModel.findOne({
-    client: client,
-    primaryKey: primaryKey,
-    secondaryKey: secondaryKey,
-  })
-    .lean()
-    .exec();
+async function remove(input: KeystoreInterface): Promise<KeystoreInterface | null> {
+  return await db.keyStore.delete({
+    where: {
+      id: input.id
+    }
+  });
 }
 
 async function create(
@@ -56,7 +38,5 @@ async function create(
 export default {
   findforKey,
   remove,
-  removeAllForClient,
-  find,
   create,
 };

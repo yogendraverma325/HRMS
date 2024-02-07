@@ -20,8 +20,7 @@ export const validateTokenData = (payload: JwtPayload): boolean => {
     !payload.aud ||
     !payload.prm ||
     payload.iss !== tokenInfo.issuer ||
-    payload.aud !== tokenInfo.audience ||
-    !Types.ObjectId.isValid(payload.sub)
+    payload.aud !== tokenInfo.audience
   )
     throw new AuthFailureError('Invalid Access Token');
   return true;
