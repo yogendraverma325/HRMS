@@ -54,7 +54,6 @@ router.post(
   '/test',
   validator(schema.credential, ValidationSource.BODY),
   asyncHandler(async (req: PublicRequest, res) => {
-
     let data= await elasticSearchClient.search({
       index: 'employee', // Specify the index you want to search in
       body: {
@@ -66,8 +65,11 @@ router.post(
       }
     });
 
+
+   
+
     new SuccessResponse('Login Success', {
-      data
+      data,
     }).send(res);
   }),
 );
