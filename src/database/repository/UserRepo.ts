@@ -74,14 +74,15 @@ async function updatefamilyDetails(user: UserInterface,inputFamilyDetails:Employ
   
   const FamilyDetails = await db.employeeFamilyDetails.findFirst({
     where:{
-      EmployeeId:user.id
+      EmployeeId:user.id,
+      empFamilyDetailsId:inputFamilyDetails.empFamilyDetailsId
     }
   });
   if(FamilyDetails){
        await db.employeeFamilyDetails.update({
       where: {
-        empFamilyDetailsId:FamilyDetails.empFamilyDetailsId,
-        EmployeeId:FamilyDetails.EmployeeId
+        empFamilyDetailsId:inputFamilyDetails.empFamilyDetailsId,
+        EmployeeId:user.id
       },
       data: inputFamilyDetails
     })
@@ -92,9 +93,28 @@ async function updatefamilyDetails(user: UserInterface,inputFamilyDetails:Employ
   }
   return inputFamilyDetails;
 }
+async function getfamilyDetails(user: UserInterface): Promise<EmployeeFamilyDetailsInterface[] | null> {
+  
+return await db.employeeFamilyDetails.findMany({
+    where:{
+      EmployeeId:user.id
+    },
+    select:{
+      empFamilyDetailsId: true,
+      EmployeeId: true,
+      name: true,
+      dob: true,
+      gender: true,
+      emergencyContactPerson: true,
+      mobileNo: true,
+      relationWithEmp: true
+    }
+  });
+}
 export default {
   findById,
   findByEmail,
   findPrivateProfileById,
-  updatefamilyDetails
+  updatefamilyDetails,
+  getfamilyDetails
 };

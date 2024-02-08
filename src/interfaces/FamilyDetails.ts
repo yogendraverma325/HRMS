@@ -7,8 +7,8 @@ export default  interface EmployeeFamilyDetailsInterface {
     emergencyContactPerson: boolean;
     mobileNo: string;
     relationWithEmp: string;
-    createdBy: number;
+    createdBy?: number;
     createdAt?: Date;
-    updatedBy: number;
+    updatedBy?: number;
     updatedAt?: Date;
   }

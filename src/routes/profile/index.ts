@@ -16,20 +16,19 @@ const router = express.Router();
 /*-------------------------------------------------------------------------*/
 
 router.get(
-  '/my',
+  '/familyDetails',
   asyncHandler(async (req: ProtectedRequest, res) => {
     const user = await UserRepo.findPrivateProfileById((req.user.id));
     if (!user) throw new BadRequestError('User not registered');
-    return new SuccessResponse(
-      'success',
-      _.pick(user, ['name', 'email','firstName','lastName']),
-    ).send(res);
+   let familyDetails= await UserRepo.getfamilyDetails(user);
+    return new SuccessResponse('Profile updated',familyDetails).send(res);
   }),
 );
 
+
 router.put(
   '/familyDetails',
-  validator(schema.profile),
+  validator(schema.familyDetails),
   asyncHandler(async (req: ProtectedRequest, res) => {
     const user = await UserRepo.findPrivateProfileById(req.user.id);
     if (!user) throw new BadRequestError('User not registered');
