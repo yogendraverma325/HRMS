@@ -18,8 +18,39 @@ import { sendPasswordResetEmail } from '../../helpers/mail.js';
 import validator, { ValidationSource } from '../../helpers/validator.js';
 import schema from './schema.js';
 import { getUserData } from './utils.js';
-
+import {kafka} from '../../helpers/utils.js';
+import { Kafka, Consumer, EachMessagePayload, Producer, ProducerRecord } from 'kafkajs';
 const router = express.Router();
+
+const consumer: Consumer = kafka.consumer({ groupId: 'my-group' });
+
+// Function to consume messages from Kafka
+async function consumeMessages(): Promise<void> {
+  try {
+    // Connect to Kafka broker
+    await consumer.connect();
+
+    // Subscribe to the topic 'my-topic'
+    await consumer.subscribe({ topic: 'my-topic' });
+
+    // Start consuming messages
+    await consumer.run({
+      eachMessage: async ({ topic, partition, message }: EachMessagePayload) => {
+        const value = message.value ? message.value.toString() : null; // Handle null value
+        console.log({
+          value:value?.toString(), // Convert message value to string
+          partition,
+          offset: message.offset
+        });
+      }
+    });
+  } catch (error) {
+    console.error('Error consuming messages:', error);
+  }
+}
+
+// Call the consumeMessages function
+consumeMessages();
 
 router.post(
   '/login',
@@ -51,7 +82,34 @@ router.post(
 );
 
 
+router.post(
+  '/test',
+  validator(schema.credential, ValidationSource.BODY),
+  asyncHandler(async (req: PublicRequest, res) => {
+    const producer: Producer = kafka.producer();
 
+    try {
+      // Connect to Kafka broker
+      await producer.connect();
+  
+      // Send a message to the topic 'my-topic'
+      await producer.send({
+        topic: 'my-topic',
+        messages: [{ value: req.body.password }]
+      });
+  
+      console.log('Message sent successfully!');
+    } catch (error) {
+      console.error('Error producing message:', error);
+    } finally {
+      // Disconnect from Kafka broker
+      await producer.disconnect();
+    }
+    new SuccessResponse('yogi Success', {
+      
+    }).send(res);
+  }),
+);
 /*-------------------------------------------------------------------------*/
 router.use(authentication);
 /*-------------------------------------------------------------------------*/

@@ -1,6 +1,15 @@
 import { Request } from 'express';
 import moment from 'moment';
-import Logger from '~/core/Logger.js';
+import Logger from '../core/Logger.js';
+
+import { Kafka, Consumer, EachMessagePayload } from 'kafkajs';
+
+// Define Kafka broker
+export const kafka = new Kafka({
+  clientId: 'my-kafka-app',
+  brokers: ['localhost:9092'] // Replace with your Kafka broker's address
+});
+
 
 export function findIpAddress(req: Request) {
   try {
