@@ -18,7 +18,7 @@ import { sendPasswordResetEmail } from '../../helpers/mail.js';
 import validator, { ValidationSource } from '../../helpers/validator.js';
 import schema from './schema.js';
 import { getUserData } from './utils.js';
-
+import {elasticSearchClient} from '../../helpers/utils.js';
 const router = express.Router();
 
 router.post(
@@ -50,7 +50,27 @@ router.post(
   }),
 );
 
+router.post(
+  '/test',
+  validator(schema.credential, ValidationSource.BODY),
+  asyncHandler(async (req: PublicRequest, res) => {
 
+    let data= await elasticSearchClient.search({
+      index: 'employee', // Specify the index you want to search in
+      body: {
+        query: {
+          match_phrase_prefix: {
+            name: 'y' // Specify the field to search and the partial string
+          }
+        }
+      }
+    });
+
+    new SuccessResponse('Login Success', {
+      data
+    }).send(res);
+  }),
+);
 
 /*-------------------------------------------------------------------------*/
 router.use(authentication);

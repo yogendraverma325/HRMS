@@ -1,7 +1,9 @@
 import { Request } from 'express';
 import moment from 'moment';
-import Logger from '~/core/Logger.js';
+import Logger from '../core/Logger.js'
+import { Client } from '@elastic/elasticsearch';
 
+export const elasticSearchClient: Client = new Client({ node: 'http://localhost:9200' });
 export function findIpAddress(req: Request) {
   try {
     if (req.headers['x-forwarded-for']) {
