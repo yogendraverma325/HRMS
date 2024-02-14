@@ -21,7 +21,7 @@ router.get(
     const user = await UserRepo.findPrivateProfileById((req.user.id));
     if (!user) throw new BadRequestError('User not registered');
    let familyDetails= await UserRepo.getfamilyDetails(user);
-    return new SuccessResponse('Profile updated',familyDetails).send(res);
+    return new SuccessResponse('Member list',familyDetails).send(res);
   }),
 );
 
@@ -33,8 +33,31 @@ router.put(
     const user = await UserRepo.findPrivateProfileById(req.user.id);
     if (!user) throw new BadRequestError('User not registered');
     await UserRepo.updatefamilyDetails(user,req.body);
-    return new SuccessResponse('Profile updated', req.body).send(res);
+    return new SuccessResponse('Member Updated updated', req.body).send(res);
   }),
 );
+
+router.post(
+  '/familyDetails',
+  validator(schema.familyDetails),
+  asyncHandler(async (req: ProtectedRequest, res) => {
+    const user = await UserRepo.findPrivateProfileById(req.user.id);
+    if (!user) throw new BadRequestError('User not registered');
+    await UserRepo.addfamilyDetails(user,req.body);
+    return new SuccessResponse('Member Added', req.body).send(res);
+  }),
+);
+
+
+router.delete(
+  '/familyDetails/:id',
+  asyncHandler(async (req: ProtectedRequest, res) => {
+    const user = await UserRepo.findPrivateProfileById(req.user.id);
+    if (!user) throw new BadRequestError('User not registered');
+    await UserRepo.removefamilyDetails(user,parseInt(req.params.id));
+    return new SuccessResponse('Member Deleted', {}).send(res);
+  }),
+);
+
 
 export default router;

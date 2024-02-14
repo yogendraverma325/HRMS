@@ -87,10 +87,19 @@ async function updatefamilyDetails(user: UserInterface,inputFamilyDetails:Employ
       data: inputFamilyDetails
     })
   }else{
-    await db.employeeFamilyDetails.create({
-      data: {...inputFamilyDetails,...{EmployeeId:user.id},...{createdBy:user.id},...{updatedBy:user.id}},
-    });
+    return await insertMember(user,inputFamilyDetails);
   }
+  return inputFamilyDetails;
+}
+async function addfamilyDetails(user: UserInterface,inputFamilyDetails:EmployeeFamilyDetailsInterface): Promise<EmployeeFamilyDetailsInterface | null> {
+ return await insertMember(user,inputFamilyDetails);
+}
+
+async function insertMember(user: UserInterface,inputFamilyDetails:EmployeeFamilyDetailsInterface){
+  delete inputFamilyDetails.empFamilyDetailsId;
+  await db.employeeFamilyDetails.create({
+    data: {...inputFamilyDetails,...{EmployeeId:user.id},...{createdBy:user.id},...{updatedBy:user.id}},
+  });
   return inputFamilyDetails;
 }
 async function getfamilyDetails(user: UserInterface): Promise<EmployeeFamilyDetailsInterface[] | null> {
@@ -111,10 +120,30 @@ return await db.employeeFamilyDetails.findMany({
     }
   });
 }
+
+async function removefamilyDetails(user: UserInterface,memberId:number){
+  let isMemberExist=await db.employeeFamilyDetails.findFirst({
+    where:{
+      EmployeeId:user.id,
+       empFamilyDetailsId:memberId
+    },
+   
+  });
+  if(isMemberExist){
+    return  await db.employeeFamilyDetails.delete({
+      where: {
+         EmployeeId:user.id,
+         empFamilyDetailsId:memberId
+         },
+    });
+  }
+  }
 export default {
   findById,
   findByEmail,
   findPrivateProfileById,
   updatefamilyDetails,
-  getfamilyDetails
+  getfamilyDetails,
+  addfamilyDetails,
+  removefamilyDetails
 };
